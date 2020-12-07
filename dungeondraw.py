@@ -16,13 +16,16 @@ class MapDisplay:
         for i in range(1, self.columns):
             self.canvas.create_line(i * self.room_unit, 0, i * self.room_unit, self.rows * self.room_unit, width=4)
 
-    def draw_room(self, x, y, doors):
-        for key, value in doors.items():
-            if value > 2:
-                self.draw_door(key, x, y)
+    def draw_room(self, room):
+        row, col = room.position[0], room.position[1]
+        self.draw_door(room.doors, row, col)
+        if room.pillar:
+            self.draw_pillar(room.pillar, row, col)
+        if room.isexit:
+            self.draw_exit(row, col)
+        if room.isentrance:
+            self.draw_entrance(row, col)
 
-        # if room is unique_room:
-        #     draw pillar, exit, or entrance
         # else:
         #     if room has potion:
         #         draw potion
@@ -31,18 +34,36 @@ class MapDisplay:
         #     if room has other feature:
         #         draw feature
 
-    def draw_door(self, key, x, y):
-        if key == "north":
-            self.canvas.create_rectangle(self.room_unit * x + 10, self.room_unit * y - 2, self.room_unit * x + 65,
-                                         self.room_unit * y + 2, fill="white", outline="")
-        elif key == "south":
-            y+=1
-            self.canvas.create_rectangle(self.room_unit * x + 10, self.room_unit * y - 2, self.room_unit * x + 65,
-                                         self.room_unit * y + 2, fill="white", outline="")
-        elif key == "west":
-            self.canvas.create_rectangle(self.room_unit * x - 2, self.room_unit * y + 10, self.room_unit * x + 2,
-                                         self.room_unit * y + 65, fill="white", outline="")
-        elif key == "east":
-            x+=1
-            self.canvas.create_rectangle(self.room_unit * x + 2, self.room_unit * y + 10, self.room_unit * x - 2,
-                                         self.room_unit * y + 65, fill="white", outline="")
+    def draw_door(self, doors, row, col):
+        for key, value in doors.items():
+            if value > 2:
+                if key == "north":
+                    self.canvas.create_rectangle(self.room_unit * col + 10, self.room_unit * row - 2, self.room_unit * col + 65,
+                                                 self.room_unit * row + 2, fill="white", outline="")
+                elif key == "south":
+                    row+=1
+                    self.canvas.create_rectangle(self.room_unit * col + 10, self.room_unit * row - 2, self.room_unit * col + 65,
+                                                 self.room_unit * row + 2, fill="white", outline="")
+                elif key == "west":
+                    self.canvas.create_rectangle(self.room_unit * col - 2, self.room_unit * row + 10, self.room_unit * col + 2,
+                                                 self.room_unit * row + 65, fill="white", outline="")
+                elif key == "east":
+                    col+=1
+                    self.canvas.create_rectangle(self.room_unit * col + 2, self.room_unit * row + 10, self.room_unit * col - 2,
+                                                 self.room_unit * row + 65, fill="white", outline="")
+
+    def draw_pillar(self, pillar, row, col):
+        offset = self.room_unit//2
+        self.canvas.create_text(self.room_unit * col + offset, self.room_unit * row + offset, text=pillar[0],
+                                font="Times 12")
+
+    def draw_exit(self, row, col):
+        # for testing, will replace with graphic
+        offset = self.room_unit // 2
+        self.canvas.create_text(self.room_unit * col + offset, self.room_unit * row + offset, text="Ex",
+                                font="Times 12")
+    def draw_entrance(self, row, col):
+        # for testing, will replace with graphic
+        offset = self.room_unit // 2
+        self.canvas.create_text(self.room_unit * col + offset, self.room_unit * row + offset, text="En",
+                                font="Times 12")
