@@ -9,6 +9,11 @@ class RoomNode:
                       "east": random.randint(0, 4),
                       "west": random.randint(0, 4)
                       }
+        # self.doors = {"north": 3,
+        #               "south": 3,
+        #               "east": 3,
+        #               "west": 3
+        #               }
 
         self.info = None
         self.pillar = None
@@ -16,8 +21,8 @@ class RoomNode:
         self.isentrance = False
 
     def __str__(self):
-        return f'{self.position}, {self.doors}'
-
+        # return f'{self.position}, {self.doors}'
+        return f'{self.position}'
 class Dungeon:
     def __init__(self, rows, columns):
         if rows * columns < 6:
@@ -27,16 +32,27 @@ class Dungeon:
         self.rows = rows
         self.cols = columns
         self.unique_rooms = []
+        self.visited_rooms = []
 
     def generate(self):
+        self.visited_rooms.clear()
         self.grid = [[RoomNode(r,c) for c in range(self.cols)] for r in range(self.rows)]
         self.set_borders()
-        self.set_pillars()
         self.set_entrance_and_exit()
-        completable = self.check_traversal()
-        while completable == False:
+        entrance = self.unique_rooms[0]
+        self.set_pillars()
+        completable = self.check_traversal(entrance.position[0], entrance.position[1])
+        if not completable:
+            # test lines
+            # print("Invalid dungeon, regenerating")
+            # path = ""
+            # for item in self.visited_rooms:
+            #     path += f'{item}, '
+            # print(path)
+            # self.draw()
             self.generate()
-            completable = self.check_traversal()
+            completable = self.check_traversal(entrance.position[0], entrance.position[1])
+
 
     def set_borders(self):
         for RoomNode in self.grid[0]:
@@ -54,9 +70,8 @@ class Dungeon:
             unique_room = self.find_rand_room()
             self.unique_rooms.append(unique_room)
             unique_room.pillar = key
-        #test lines
-        # for key, value in pillars.items():
-        #     print(f'{key} at {value}')
+            # test line
+            # print(f'{key} at {unique_room}')
 
     def find_rand_room(self):
         randrow = random.randint(0, self.rows - 1)
@@ -68,18 +83,72 @@ class Dungeon:
 
 
     def set_entrance_and_exit(self):
+        self.unique_rooms.clear()
         entrance = self.find_rand_room()
         entrance.isentrance = True
         self.unique_rooms.append(entrance)
         exit = self.find_rand_room()
         exit.isexit = True
         self.unique_rooms.append(exit)
-        print(f'Entrance at {entrance} \nExit at {exit}')
+        # test line
+        # print(f'Entrance at {entrance} \nExit at {exit}')
 
 
-    def check_traversal(self):
-        pass
+    def check_traversal(self, row, col):
+        found_path = False
+        if self.grid[row][col] not in self.visited_rooms:
+            self.visited_rooms.append(self.grid[row][col])
+            if all(items in self.visited_rooms for items in self.unique_rooms):
+                # test lines
+                # for items in self.visited_rooms:
+                #     print(items)
+                # self.visited_rooms.clear()
+                found_path = True
+            else:
+                if not found_path and self.check_north(row, col):
+                    found_path = self.check_traversal(row-1, col)
+                if not found_path and self.check_west(row, col):
+                    found_path = self.check_traversal(row, col-1)
+                if not found_path and self.check_south(row, col):
+                    found_path = self.check_traversal(row+1, col)
+                if not found_path and self.check_east(row, col):
+                    found_path = self.check_traversal(row, col+1)
+        return found_path
 
+    def in_bounds(self, row, col):
+        if 0 <= row < self.rows and 0 <= col < self.cols:
+            return True
+        else:
+            return False
+
+
+    def check_north(self, row, col):
+        if self.in_bounds(row-1, col):
+            if self.grid[row][col].doors["north"] > 2 or self.grid[row-1][col].doors["south"] > 2:
+                return True
+        else:
+            return False
+
+    def check_south(self, row, col):
+        if self.in_bounds(row+1, col):
+            if self.grid[row][col].doors["south"] > 2 or self.grid[row+1][col].doors["north"] > 2:
+                return True
+        else:
+            return False
+
+    def check_east(self, row, col):
+        if self.in_bounds(row, col+1):
+            if self.grid[row][col].doors["east"] > 2 or self.grid[row][col+1].doors["west"] > 2:
+                return True
+        else:
+            return False
+
+    def check_west(self, row, col):
+        if self.in_bounds(row, col-1):
+            if self.grid[row][col].doors["west"] > 2 or self.grid[row][col-1].doors["east"] > 2:
+                return True
+        else:
+            return False
 
     def draw(self):
         display = MapDisplay(self.rows, self.cols)
@@ -93,8 +162,9 @@ class Dungeon:
 
 if __name__ == '__main__':
 
-    test = Dungeon(3,3)
+    test = Dungeon(4,4)
     test.generate()
+
     test.draw()
 
 
