@@ -41,15 +41,15 @@ class MapDisplay:
                     self.canvas.create_rectangle(self.room_unit * col + 10, self.room_unit * row - 2, self.room_unit * col + 65,
                                                  self.room_unit * row + 2, fill="white", outline="")
                 elif key == "south":
-                    row+=1
-                    self.canvas.create_rectangle(self.room_unit * col + 10, self.room_unit * row - 2, self.room_unit * col + 65,
-                                                 self.room_unit * row + 2, fill="white", outline="")
+                    # row+=1
+                    self.canvas.create_rectangle(self.room_unit * col + 10, self.room_unit * (row+1) - 2, self.room_unit * col + 65,
+                                                 self.room_unit * (row+1) + 2, fill="white", outline="")
                 elif key == "west":
                     self.canvas.create_rectangle(self.room_unit * col - 2, self.room_unit * row + 10, self.room_unit * col + 2,
                                                  self.room_unit * row + 65, fill="white", outline="")
                 elif key == "east":
-                    col+=1
-                    self.canvas.create_rectangle(self.room_unit * col + 2, self.room_unit * row + 10, self.room_unit * col - 2,
+                    # col+=1
+                    self.canvas.create_rectangle(self.room_unit * (col+1) + 2, self.room_unit * row + 10, self.room_unit * (col+1) - 2,
                                                  self.room_unit * row + 65, fill="white", outline="")
 
     def draw_pillar(self, pillar, row, col):
