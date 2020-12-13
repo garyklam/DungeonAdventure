@@ -22,7 +22,7 @@ class Room:
         self.__HitPoints = 0
         self.__DamagePoints = 0
         self.__EmptyRoom = False
-        self.set_room_type()
+        
 
     def doors(self):
         return self.__doors
