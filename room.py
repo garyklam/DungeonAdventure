@@ -136,3 +136,4 @@ class Room:
 
     def set_west_border(self):
         self.__doors["west"] = 0
+
