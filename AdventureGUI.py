@@ -1,14 +1,13 @@
 from dungeon import Dungeon
 from dungeondraw import MapDisplay
 from adventurer import Adventurer
-from tkinter import Tk, Frame, scrolledtext, Button, simpledialog, Label, Canvas, Text, Entry, Toplevel
+from tkinter import Tk, Frame, Button, Label, Canvas, Text, Entry, Toplevel
 
 class AdventureGUI:
     def __init__(self):
         self.dungeon = Dungeon(4, 4)
         self.dungeon.generate()
         self.adventurer = Adventurer("")
-
 
         self.root = Tk()
         self.root.title("Dungeon Adventure")
@@ -88,12 +87,12 @@ class AdventureGUI:
         hard_button.grid(row=2, column=2)
         medium_button = Button(creation_menu, text="Medium", command=lambda:set_difficulty("Medium"))
         medium_button.grid(row=3, column=2)
-        easy_button = Button(creation_menu, text="Easy", command=lambda:set_difficulty("Easy"))
+        easy_button = Button(creation_menu, text="Easy", relief="sunken", command=lambda:set_difficulty("Easy"))
         easy_button.grid(row=4, column=2)
         custom = Button(creation_menu, text="Custom", command=lambda:set_difficulty("Custom"))
         # custom.grid(row=5, column=2)
         confirm_button = Button(creation_menu, text="Confirm", font="Times 16",
-                                command=lambda:self.start_game(name_entry, creation_menu))
+                                command=lambda:self.start_game(name_entry.get(), creation_menu))
         confirm_button.grid(row=6, column=0)
         back_button = Button(creation_menu, text="Back", font="Times 16",
                              command=lambda:self.return_to_start(creation_menu))
@@ -101,18 +100,24 @@ class AdventureGUI:
 
 
     def start_game(self, name, current_canvas):
-        if not name:
 
-        current_canvas.pack_forget()
-        self.adventurer.name = name
-        self.dungeon.generate()
-        self.dungeon.visited_rooms.clear()
-        entrance = self.dungeon.unique_rooms[0].position()
-        entrance_row, entrance_col = entrance[0], entrance[1]
-        # start main game logic
-        self.maps = MapDisplay(self.dungeon.rows, self.dungeon.cols, self.root)
-        entire_map = self.maps.draw_entire_map(self.dungeon)
-        entire_map.pack()
+        if name.strip() == "":
+            error_window = Toplevel()
+            error_window.title("Error")
+            message = Label(error_window, text="Please enter a name", font="Times 20").pack()
+
+        else:
+            current_canvas.pack_forget()
+            self.adventurer.name = name
+            self.dungeon.generate()
+            self.dungeon.visited_rooms.clear()
+            entrance = self.dungeon.unique_rooms[0].position()
+            entrance_row, entrance_col = entrance[0], entrance[1]
+            self.adventurer.set_location(entrance_row, entrance_col)
+            # start main game logic
+            self.maps = MapDisplay(self.dungeon.rows, self.dungeon.cols, self.root)
+            entire_map = self.maps.draw_entire_map(self.dungeon)
+            entire_map.pack()
 
 
 
