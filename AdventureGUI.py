@@ -1,6 +1,6 @@
 from dungeon import Dungeon
-from dungeondraw import MapDisplay
 from adventurer import Adventurer
+from main_game import Main_Game
 from tkinter import Tk, Frame, Button, Label, Canvas, Text, Entry, Toplevel
 
 class AdventureGUI:
@@ -10,6 +10,7 @@ class AdventureGUI:
         self.adventurer = Adventurer("")
 
         self.root = Tk()
+        self.root.resizable(False, False)
         self.root.title("Dungeon Adventure")
         self.start_menu_init()
         self.root.mainloop()
@@ -111,13 +112,13 @@ class AdventureGUI:
             self.adventurer.name = name
             self.dungeon.generate()
             self.dungeon.visited_rooms.clear()
+            self.dungeon.visited_rooms.append(self.dungeon.unique_rooms[0])
             entrance = self.dungeon.unique_rooms[0].position()
             entrance_row, entrance_col = entrance[0], entrance[1]
             self.adventurer.set_location(entrance_row, entrance_col)
             # start main game logic
-            self.maps = MapDisplay(self.dungeon.rows, self.dungeon.cols, self.root)
-            entire_map = self.maps.draw_entire_map(self.dungeon)
-            entire_map.pack()
+            main_game = Main_Game(self.root, self.dungeon, self.adventurer)
+            main_game.display().grid(row=0, column=0)
 
 
 
