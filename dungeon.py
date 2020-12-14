@@ -16,10 +16,19 @@ class Dungeon:
         return self.grid[row][col]
 
     def resize_dungeon(self, row, col):
+        """
+        Alters dimension fields of the dungeon, does not create a new grid of rooms, needs to call generate to actually
+        resize the dungeon.
+        """
         self.rows = row
         self.cols = col
 
     def generate(self):
+        """
+        Creates a new grid of rooms, sets the borders, sets the entrance, exit and pillars, then checks if it is
+        possible to reach the exit and all of the pillars from the entrance. If not, the dungeon is remade and checked
+        again, repeating until the dungeon is traversable.
+        """
         self.visited_rooms.clear()
         self.grid = [[Room(r,c) for c in range(self.cols)] for r in range(self.rows)]
         self.set_borders()
@@ -40,6 +49,7 @@ class Dungeon:
 
 
     def set_borders(self):
+        """Sets the door values of the rooms on the edge of the dungeon to be walls."""
         for Room in self.grid[0]:
             Room.set_north_border()
         for Room in self.grid[self.rows-1]:
@@ -49,6 +59,10 @@ class Dungeon:
             row[self.cols-1].set_east_border()
 
     def set_pillars(self):
+        """
+        Finds a random room that is not already a pillar, the exit or entrance and sets it pillar field to one of
+        the pillars in the list, then adds it to a list of unique rooms so that it cannot be chosen for the next pillar.
+        """
         pillars = ("Abstraction", "Encapsulation", "Inheritance", "Polymorphism")
 
         for key in pillars:
@@ -59,6 +73,10 @@ class Dungeon:
             # print(f'{key} at {unique_room}')
 
     def find_rand_room(self):
+        """
+        Finds and returns a random room that is not already a unique room.
+        :return: Room
+        """
         randrow = random.randint(0, self.rows - 1)
         randcol = random.randint(0, self.cols - 1)
         if self.grid[randrow][randcol] not in self.unique_rooms:
@@ -68,6 +86,10 @@ class Dungeon:
 
 
     def set_entrance_and_exit(self):
+        """
+        Finds a random room to be the entrance and exit, adds these rooms to a list of unique rooms to avoid adding
+        a pillar to either room.
+        """
         self.unique_rooms.clear()
         entrance = self.find_rand_room()
         entrance.set_entrance()
@@ -101,6 +123,10 @@ class Dungeon:
         return found_path
 
     def in_bounds(self, row, col):
+        """
+        Checks if the given row and column are within the bounds of the dungeon, returns true if it is, returns
+        false if it is not
+        """
         if 0 <= row < self.rows and 0 <= col < self.cols:
             return True
         else:
@@ -149,33 +175,6 @@ class Dungeon:
                 return True
         else:
             return False
-
-    # def show_map(self):
-    #     display = MapDisplay(self.rows, self.cols)
-    #     display.draw_all_walls()
-    #     for list in self.grid:
-    #         for room in list:
-    #             display.draw_room(room)
-    #     display.root.mainloop()
-    #
-    # def show_map_no_fog(self):
-    #     display = MapDisplay(self.rows, self.cols)
-    #     display.draw_all_walls()
-    #     for i in range(0, self.rows, 2):
-    #         for j in range(0, self.cols, 2):
-    #             display.draw_room(self.get_room(i, j))
-    #     for i in range(1, self.rows, 2):
-    #         for j in range(1, self.cols, 2):
-    #             display.draw_room(self.get_room(i, j))
-    #
-    #     display.root.mainloop()
-    #
-    # def draw_path(self):
-    #     display = MapDisplay(self.rows, self.cols)
-    #     display.draw_border()
-    #     for room in self.unique_rooms:
-    #         display.draw_room(room)
-    #     display.root.mainloop()
 
 
 if __name__ == '__main__':

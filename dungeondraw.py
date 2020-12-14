@@ -1,32 +1,32 @@
 from tkinter import Tk, Canvas, Frame, Button, Entry
-from dungeon import Dungeon
 
 class MapDisplay:
 
-    def __init__(self, rows, columns, root):
-        self.rows = rows
-        self.columns  = columns
+    def __init__(self, dungeon, root):
+        self.dungeon = dungeon
+        self.rows = self.dungeon.rows
+        self.cols  = self.dungeon.cols
         self.room_unit = 75
         self.root = root
-        self.player_map = Canvas(self.root, height=rows*self.room_unit, width=columns*self.room_unit, bg="white")
-        self.entire_map = Canvas(self.root, height=rows*self.room_unit, width=columns*self.room_unit, bg="white")
+        self.player_map = Canvas(self.root, height=self.rows*self.room_unit, width=self.cols*self.room_unit, bg="white")
+        self.entire_map = Canvas(self.root, height=self.rows*self.room_unit, width=self.cols*self.room_unit, bg="white")
 
-    def draw_entire_map(self, dungeon):
-        for list in dungeon.grid:
+    def draw_entire_map(self):
+        for list in self.dungeon.grid:
             for room in list:
                 self.draw_walls(room, self.entire_map)
-        for list in dungeon.grid:
+        for list in self.dungeon.grid:
             for room in list:
                 self.draw_room_contents(room, self.entire_map)
-                self.draw_door(room, self.entire_map, dungeon)
+                self.draw_door(room, self.entire_map)
         return self.entire_map
 
-    def draw_player_map(self, dungeon, adventurer):
-        for room in dungeon.visited_rooms:
+    def draw_player_map(self, adventurer):
+        for room in self.dungeon.visited_rooms:
             self.draw_walls(room, self.player_map)
-        for room in dungeon.visited_rooms:
+        for room in self.dungeon.visited_rooms:
             self.draw_room_contents(room, self.player_map)
-            self.draw_door(room, self.player_map, dungeon)
+            self.draw_door(room, self.player_map)
         location = adventurer.current_location
         row, col = location[0], location[1]
         self.player_map.create_text(self.room_unit*col+5, self.room_unit*row+5, text=adventurer.name)
@@ -35,8 +35,8 @@ class MapDisplay:
     def draw_walls(self, room, canvas):
         position = room.position()
         row, col = position[0], position[1]
-        canvas.create_rectangle(self.room_unit * row, self.room_unit * col, self.room_unit * (row+1),
-                                self.room_unit * (col+1), width=4)
+        canvas.create_rectangle(self.room_unit * col, self.room_unit * row, self.room_unit * (col+1),
+                                self.room_unit * (row+1), width=4)
 
     def draw_room_contents(self, room, canvas):
         def draw_pillar(pillar):
@@ -74,21 +74,19 @@ class MapDisplay:
         #     if room has other feature:
         #         draw feature
 
-    def draw_door(self, room, canvas, dungeon):
+    def draw_door(self, room, canvas):
         position = room.position()
         row, col = position[0], position[1]
-        # canvas.create_rectangle(self.room_unit * row, self.room_unit * col, self.room_unit * (row+1),
-        #                         self.room_unit * (col+1), width=4)
-        if dungeon.check_north(row, col):
+        if self.dungeon.check_north(row, col):
             canvas.create_rectangle(self.room_unit * col + 10, self.room_unit * row - 2, self.room_unit * col + 65,
                                          self.room_unit * row + 2, fill="white", outline="")
-        if dungeon.check_south(row, col):
+        if self.dungeon.check_south(row, col):
             canvas.create_rectangle(self.room_unit * col + 10, self.room_unit * (row+1) - 2, self.room_unit * col + 65,
                                          self.room_unit * (row+1) + 2, fill="white", outline="")
-        if dungeon.check_west(row, col):
+        if self.dungeon.check_west(row, col):
             canvas.create_rectangle(self.room_unit * col - 2, self.room_unit * row + 10, self.room_unit * col + 2,
                                          self.room_unit * row + 65, fill="white", outline="")
-        if dungeon.check_east(row, col):
+        if self.dungeon.check_east(row, col):
             canvas.create_rectangle(self.room_unit * (col+1) + 2, self.room_unit * row + 10, self.room_unit * (col+1) - 2,
                                                  self.room_unit * row + 65, fill="white", outline="")
 
@@ -100,9 +98,9 @@ if __name__ == '__main__':
     test = Dungeon(6,6)
     test.generate()
     Tom = Adventurer("Tom")
-    mapdrawer = MapDisplay(6,6, root)
-    # entire_map = mapdrawer.draw_entire_map(test)
+    mapdrawer = MapDisplay(test, root)
+    # entire_map = mapdrawer.draw_entire_map()
     # entire_map.pack()
-    player_map = mapdrawer.draw_player_map(test, Tom)
+    player_map = mapdrawer.draw_player_map(Tom)
     player_map.pack()
     root.mainloop()
