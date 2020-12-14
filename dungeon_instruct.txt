@@ -1,0 +1,13 @@
+Welcome to the dungeon.
+
+Your goal is to make it to the exit after finding all four pillars of OOP.
+
+Each room you find can have a pit or a healing potion, both automatically affect your healthpoints.
+
+If your health drops below 0, it's game over.
+
+Vision potions can also be randomly found in the dungeon, using one will reveal the adjacent rooms on your map.
+
+If your adventure proves too dangerous, the dungeon difficulty can be adjusted when creating a new game.
+
+Best of luck on your search for the pillars and escaping the dungeon!

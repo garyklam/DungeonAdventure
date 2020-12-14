@@ -1,28 +1,6 @@
 import random
-from dungeondraw import MapDisplay
+from room import Room
 
-class RoomNode:
-    def __init__(self, row, column):
-        self.position = (row, column)
-        self.doors = {"north": random.randint(0, 4),
-                      "south": random.randint(0, 4),
-                      "east": random.randint(0, 4),
-                      "west": random.randint(0, 4)
-                      }
-        # self.doors = {"north": 3,
-        #               "south": 3,
-        #               "east": 3,
-        #               "west": 3
-        #               }
-
-        self.info = None
-        self.pillar = None
-        self.isexit = False
-        self.isentrance = False
-
-    def __str__(self):
-        # return f'{self.position}, {self.doors}'
-        return f'{self.position}'
 class Dungeon:
     def __init__(self, rows, columns):
         if rows * columns < 6:
@@ -34,14 +12,21 @@ class Dungeon:
         self.unique_rooms = []
         self.visited_rooms = []
 
+    def get_room(self, row, col):
+        return self.grid[row][col]
+
+    def resize_dungeon(self, row, col):
+        self.rows = row
+        self.cols = col
+
     def generate(self):
         self.visited_rooms.clear()
-        self.grid = [[RoomNode(r,c) for c in range(self.cols)] for r in range(self.rows)]
+        self.grid = [[Room(r,c) for c in range(self.cols)] for r in range(self.rows)]
         self.set_borders()
         self.set_entrance_and_exit()
-        entrance = self.unique_rooms[0]
+        entrance = self.unique_rooms[0].position()
         self.set_pillars()
-        completable = self.check_traversal(entrance.position[0], entrance.position[1])
+        completable = self.check_traversal(entrance[0], entrance[1])
         if not completable:
             # test lines
             # print("Invalid dungeon, regenerating")
@@ -51,25 +36,25 @@ class Dungeon:
             # print(path)
             # self.draw()
             self.generate()
-            completable = self.check_traversal(entrance.position[0], entrance.position[1])
+            completable = self.check_traversal(entrance[0], entrance[1])
 
 
     def set_borders(self):
-        for RoomNode in self.grid[0]:
-            RoomNode.doors["north"] = 0
-        for RoomNode in self.grid[self.rows-1]:
-            RoomNode.doors["south"] = 0
+        for Room in self.grid[0]:
+            Room.set_north_border()
+        for Room in self.grid[self.rows-1]:
+            Room.set_south_border()
         for row in self.grid:
-            row[0].doors["west"] = 0
-            row[self.cols-1].doors["east"] = 0
+            row[0].set_west_border()
+            row[self.cols-1].set_east_border()
 
     def set_pillars(self):
-        pillars = ("Abstraction", "Encapslation", "Inheritance", "Polymorphism")
+        pillars = ("Abstraction", "Encapsulation", "Inheritance", "Polymorphism")
 
         for key in pillars:
             unique_room = self.find_rand_room()
             self.unique_rooms.append(unique_room)
-            unique_room.pillar = key
+            unique_room.set_pillar(key)
             # test line
             # print(f'{key} at {unique_room}')
 
@@ -85,10 +70,10 @@ class Dungeon:
     def set_entrance_and_exit(self):
         self.unique_rooms.clear()
         entrance = self.find_rand_room()
-        entrance.isentrance = True
+        entrance.set_entrance()
         self.unique_rooms.append(entrance)
         exit = self.find_rand_room()
-        exit.isexit = True
+        exit.set_exit()
         self.unique_rooms.append(exit)
         # test line
         # print(f'Entrance at {entrance} \nExit at {exit}')
@@ -121,50 +106,85 @@ class Dungeon:
         else:
             return False
 
-
     def check_north(self, row, col):
         if self.in_bounds(row-1, col):
-            if self.grid[row][col].doors["north"] > 2 or self.grid[row-1][col].doors["south"] > 2:
+            curr = self.get_room(row, col)
+            doors1 = curr.doors()
+            south = self.get_room(row-1, col)
+            doors2 = south.doors()
+            if doors1["north"] > 2 or doors2["south"] > 2:
                 return True
         else:
             return False
 
     def check_south(self, row, col):
         if self.in_bounds(row+1, col):
-            if self.grid[row][col].doors["south"] > 2 or self.grid[row+1][col].doors["north"] > 2:
+            curr = self.get_room(row, col)
+            doors1 = curr.doors()
+            north = self.get_room(row+1, col)
+            doors2 = north.doors()
+            if doors1["south"] > 2 or doors2["north"] > 2:
                 return True
         else:
             return False
 
     def check_east(self, row, col):
         if self.in_bounds(row, col+1):
-            if self.grid[row][col].doors["east"] > 2 or self.grid[row][col+1].doors["west"] > 2:
+            curr = self.get_room(row, col)
+            doors1 = curr.doors()
+            west = self.get_room(row, col+1)
+            doors2 = west.doors()
+            if doors1["east"] > 2 or doors2["west"] > 2:
                 return True
         else:
             return False
 
     def check_west(self, row, col):
         if self.in_bounds(row, col-1):
-            if self.grid[row][col].doors["west"] > 2 or self.grid[row][col-1].doors["east"] > 2:
+            curr = self.get_room(row, col)
+            doors1 = curr.doors()
+            east = self.get_room(row, col-1)
+            doors2 = east.doors()
+            if doors1["west"] > 2 or doors2["east"] > 2:
                 return True
         else:
             return False
 
-    def draw(self):
-        display = MapDisplay(self.rows, self.cols)
-        display.draw_border()
-        for list in self.grid:
-            for room in list:
-                display.draw_room(room)
-        display.root.mainloop()
-
+    # def show_map(self):
+    #     display = MapDisplay(self.rows, self.cols)
+    #     display.draw_all_walls()
+    #     for list in self.grid:
+    #         for room in list:
+    #             display.draw_room(room)
+    #     display.root.mainloop()
+    #
+    # def show_map_no_fog(self):
+    #     display = MapDisplay(self.rows, self.cols)
+    #     display.draw_all_walls()
+    #     for i in range(0, self.rows, 2):
+    #         for j in range(0, self.cols, 2):
+    #             display.draw_room(self.get_room(i, j))
+    #     for i in range(1, self.rows, 2):
+    #         for j in range(1, self.cols, 2):
+    #             display.draw_room(self.get_room(i, j))
+    #
+    #     display.root.mainloop()
+    #
+    # def draw_path(self):
+    #     display = MapDisplay(self.rows, self.cols)
+    #     display.draw_border()
+    #     for room in self.unique_rooms:
+    #         display.draw_room(room)
+    #     display.root.mainloop()
 
 
 if __name__ == '__main__':
 
-    test = Dungeon(4,4)
+    test = Dungeon(6,6)
     test.generate()
 
-    test.draw()
+    # test.show_map()
+    # test.show_map_no_fog()
+    # test.draw_path()
 
 
