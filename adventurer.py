@@ -15,6 +15,9 @@ class Adventurer:
     def current_location(self):
         return self._current_location
 
+    def set_location(self, row, col):
+        self._current_location = (row, col)
+
     def hit_point(self):
         return self.hit_point
 
