@@ -29,7 +29,7 @@ class MapDisplay:
             self.draw_door(room, self.player_map)
         location = adventurer.current_location
         row, col = location[0], location[1]
-        self.player_map.create_text(self.room_unit*col+5, self.room_unit*row+5, text=adventurer.name)
+        self.player_map.create_text(self.room_unit*col+37, self.room_unit*(row+1)-10, text=adventurer.name)
         return self.player_map
 
     def draw_walls(self, room, canvas):
@@ -40,39 +40,49 @@ class MapDisplay:
 
     def draw_room_contents(self, room, canvas):
         def draw_pillar(pillar):
-            canvas.create_text(room_unit * col + offset, room_unit * row + offset, text=pillar[0],
-                                    font="Times 12")
+            canvas.create_text(room_unit * col + 15, room_unit * (row+1) - 15, text=pillar[0],
+                                    font="Times 14")
 
         def draw_exit():
-            # for testing, will replace with graphic
             canvas.create_text(room_unit * col + offset, room_unit * row + offset, text="Ex",
-                                    font="Times 12")
+                                    font="Times 14")
 
         def draw_entrance():
-            # for testing, will replace with graphic
             canvas.create_text(room_unit * col + offset, room_unit * row + offset, text="En",
-                                    font="Times 12")
+                                    font="Times 14")
 
+        def draw_potion():
+            canvas.create_oval(room_unit * col + 8, room_unit * row +8, room_unit * col + 18, room_unit * row + 18,
+                               fill="red")
+
+        def draw_pit():
+            canvas.create_oval(room_unit * col + 25, room_unit * row + 25, room_unit * col + 49, room_unit * row + 49,
+                               fill="light grey", outline="black")
+
+        def draw_vision():
+            canvas.create_polygon(room_unit * col + 62, room_unit * row + 14, room_unit * col + 66, room_unit * row + 8,
+                                  room_unit * col + 70, room_unit * row + 14, room_unit * col + 66, room_unit * row + 20,
+                                  fill="blue")
 
         position = room.position()
         row, col = position[0], position[1]
         room_unit = self.room_unit
         offset = room_unit // 2
 
-        if room.pillar():
-            draw_pillar(room.pillar())
+
         if room.exit():
             draw_exit()
-        if room.entrance():
+        elif room.entrance():
             draw_entrance()
-
-        # else:
-        #     if room has potion:
-        #         draw potion
-        #     if room has pit:
-        #         draw pit
-        #     if room has other feature:
-        #         draw feature
+        else:
+            if room.pillar():
+                draw_pillar(room.pillar())
+            if room.healing_potion():
+                draw_potion()
+            if room.pit():
+                draw_pit()
+            if room.vision_potion():
+                draw_vision()
 
     def draw_door(self, room, canvas):
         position = room.position()
@@ -102,24 +112,93 @@ class GameDisplay:
     def draw(self):
         if self.dungeon.check_north(self.row, self.col):
             north = self.dungeon.get_room(self.row-1, self.col)
-            self.draw_room(north, 0, 1)
+            self.draw_room(north, self.row-1, self.col)
         if self.dungeon.check_south(self.row, self.col):
             south = self.dungeon.get_room(self.row+1, self.col)
-            self.draw_room(south, 2, 1)
+            self.draw_room(south, self.row+1, self.col)
         if self.dungeon.check_east(self.row, self.col):
             east = self.dungeon.get_room(self.row, self.col+1)
-            self.draw_room(east, 1, 2)
+            self.draw_room(east, self.row, self.col+1)
         if self.dungeon.check_west(self.row, self.col):
             west = self.dungeon.get_room(self.row, self.col-1)
-            self.draw_room(west, 1, 0)
+            self.draw_room(west, self.row, self.col-1)
         room = self.dungeon.get_room(self.row, self.col)
-        self.draw_room(room, 1, 1)
+        self.draw_room(room, self.row, self.col)
 
 
     def draw_room(self, room, row, col):
-        pass
-        # if room not in self.dungeon.visited_rooms:
-        #     self.canvas.create_rectangle()
+        row_offset = self.row-1
+        col_offset = self.col-1
+        display_row = row - row_offset
+        display_col = col - col_offset
+        if room in self.dungeon.visited_rooms:
+            self.canvas.create_rectangle(display_col * 200 + 10, display_row * 200 + 10, (display_col + 1) * 200 + 10,
+                                         (display_row + 1) * 200 + 10, fill="white", width=4)
+            self.draw_doors(row, col)
+            if room.exit():
+                self.draw_exit(display_row, display_col)
+            elif room.entrance():
+                self.draw_entrance(display_row, display_col)
+            else:
+                if room.pillar():
+                    self.draw_pillar(room.pillar(), display_row, display_col)
+                if room.healing_potion():
+                    self.draw_potion(display_row, display_col)
+                if room.pit():
+                    self.draw_pit(display_row, display_col)
+                if room.vision_potion():
+                    self.draw_vision(display_row, display_col)
+
+        else:
+            self.canvas.create_rectangle(display_col * 200 + 10, display_row * 200 + 10, (display_col + 1) * 200 + 10,
+                                         (display_row + 1) * 200 + 10, fill="light grey", width=4)
+
+
+    def draw_doors(self, row, col):
+        row_offset = self.row - 1
+        col_offset = self.col - 1
+        display_row = row - row_offset
+        display_col = col - col_offset
+        if self.dungeon.check_north(row, col):
+            self.canvas.create_line(200 * display_col + 55, 200 * (display_row)+10, 200 * display_col + 165,
+                                    200 * (display_row) +10, fill="white", width=4)
+        if self.dungeon.check_south(row, col):
+            self.canvas.create_line(200 * display_col + 55, 200 * (display_row + 1) +10,
+                                    200 * display_col + 165,
+                                    200 * (display_row + 1) + 10, fill="white", width=4)
+        if self.dungeon.check_west(row, col):
+            self.canvas.create_line(200 * (display_col) + 10, 200 * display_row + 55, 200 * (display_col) + 10,
+                                    200 * display_row + 165, fill="white", width=4)
+        if self.dungeon.check_east(row, col):
+            self.canvas.create_line(200 * (display_col + 1) + 10, 200 * display_row + 55,
+                                    200 * (display_col + 1) + 10,
+                                    200 * display_row + 165, fill="white", width=4)
+
+    def draw_pillar(self, pillar, row, col):
+        self.canvas.create_text(200 * col + 30, 200 * (row + 1) - 15, text=pillar[0],
+                           font="Times 24")
+
+    def draw_exit(self, row, col):
+        self.canvas.create_text(200 * col + 110, 200 * row + 110, text="Ex",
+                           font="Times 24")
+
+    def draw_entrance(self, row, col):
+        self.canvas.create_text(200 * col + 110, 200 * row + 110, text="En",
+                           font="Times 24")
+
+    def draw_potion(self, row, col):
+        self.canvas.create_oval(200 * col + 15, 200 * row + 15, 200 * col + 30, 200 * row + 30,
+                           fill="red")
+
+    def draw_pit(self, row, col):
+        self.canvas.create_oval(200 * col + 70, 200 * row + 70, 200 * col + 150, 200 * row + 150,
+                           fill="light grey", outline="black")
+
+    def draw_vision(self, row, col):
+        self.canvas.create_polygon(200 * col + 189, 200 * row + 23, 200 * col + 195, 200 * row + 15,
+                                200 * col + 201, 200 * row + 23, 200 * col + 195, 200 * row + 31,
+                                fill="blue")
+
 
 
 
