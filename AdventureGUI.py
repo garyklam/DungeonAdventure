@@ -21,43 +21,38 @@ class AdventureGUI:
     def start_menu_init(self):
 
         self.startmenu = Frame(self.root)
-        self.startmenu.pack()
-        menu_spacer = Frame(self.startmenu, height=100, width=600).pack()
+        self.startmenu.grid(row=0,column=0)
+        menu_spacer = Frame(self.startmenu, height=100, width=600).grid(row=0, column=0)
 
-        title = Label(self.startmenu, text="502 Dungeon Adventure", font="Times 40", pady=50).pack()
+        title = Label(self.startmenu, text="502 Dungeon Adventure", font="Times 40", pady=50).grid(row=1, column=0)
 
-        new_game_button = Button(self.startmenu, text="New Game", font="Times 20", command=self.game_init).pack()
+        new_game_button = Button(self.startmenu, text="New Game", font="Times 20",
+                                 command=self.game_init).grid(row=2,column=0)
 
         instructions_button = Button(self.startmenu, text="Instructions", font="Times 20",
-                                     command=self.display_instructions).pack()
+                                     command=self.display_instructions).grid(row=3, column=0)
 
-        exit_button = Button(self.startmenu, text="Exit", font="Times 20", command=self.root.destroy).pack()
-        menu_spacer2 = Frame(self.startmenu, height=100, width=600).pack()
-        test_button = Button(self.startmenu, text="TEST", command=self.test_method).pack()
-
-    def test_method(self):
-        pass
-
-
-
+        exit_button = Button(self.startmenu, text="Exit", font="Times 20",
+                             command=self.root.destroy).grid(row=4, column=0)
+        menu_spacer2 = Frame(self.startmenu, height=100, width=600).grid(row=5, column=0)
 
     def display_instructions(self):
-        self.startmenu.pack_forget()
+        self.startmenu.grid_forget()
         instruction_file = open("dungeon_instruct.txt", 'r')
         instruction_text = instruction_file.read()
         instruct_frame = Frame(self.root, height=600, width=600)
-        instruct_frame.pack()
+        instruct_frame.grid(row=0,column=0)
         t = Text(instruct_frame, wrap="word", font="Times 16")
-        t.pack()
+        t.grid(row=0, column=0)
         t.insert("1.0", instruction_text)
         instruction_file.close()
 
         back_button = Button(instruct_frame, text="Back", font="Times 20",
-                             command= lambda: self.return_to_start(instruct_frame)).pack()
+                             command= lambda: self.return_to_start(instruct_frame)).grid(row=1, column=0)
 
     def return_to_start(self, current):
-        current.pack_forget()
-        self.startmenu.pack()
+        current.grid_forget()
+        self.startmenu.grid(row=0, column=0)
 
     def game_init(self):
         def set_difficulty(difficulty):
@@ -84,9 +79,9 @@ class AdventureGUI:
 
         dungeon = self.dungeon
         adventurer = self.adventurer
-        self.startmenu.pack_forget()
+        self.startmenu.grid_forget()
         creation_menu = Frame(self.root)
-        creation_menu.pack()
+        creation_menu.grid(row=0, column=0)
         new_name = Label(creation_menu, text="Adventurer Name: ", font="Times 14")
         new_name.grid(row=0, column=0, columnspan=2)
         name_entry = Entry(creation_menu, width=40)
@@ -99,8 +94,6 @@ class AdventureGUI:
         medium_button.grid(row=3, column=2)
         easy_button = Button(creation_menu, text="Easy", relief="sunken", command=lambda:set_difficulty("Easy"))
         easy_button.grid(row=4, column=2)
-        # custom = Button(creation_menu, text="Custom", command=lambda:set_difficulty("Custom"))
-        # custom.grid(row=5, column=2)
         confirm_button = Button(creation_menu, text="Confirm", font="Times 16",
                                 command=lambda:self.start_game(name_entry.get(), creation_menu))
         confirm_button.grid(row=6, column=0)
@@ -110,14 +103,12 @@ class AdventureGUI:
 
 
     def start_game(self, name, current_canvas):
-
         if name.strip() == "":
             error_window = Toplevel()
             error_window.title("Error")
-            message = Label(error_window, text="Please enter a name", font="Times 20").pack()
-
+            message = Label(error_window, text="Please enter a name", font="Times 20").grid(row=0, column=0)
         else:
-            current_canvas.pack_forget()
+            current_canvas.grid_forget()
             self.adventurer.name = name
             self.dungeon.generate()
             self.dungeon.visited_rooms.clear()
@@ -125,8 +116,10 @@ class AdventureGUI:
             entrance = self.dungeon.unique_rooms[0].position()
             entrance_row, entrance_col = entrance[0], entrance[1]
             self.adventurer.set_location(entrance_row, entrance_col)
+            self.startmenu.grid(row=0, column=0)
             main_game = Main_Game(self.root, self.dungeon, self.adventurer)
             main_game.frame.grid(row=0, column=0)
+
 
 
 
