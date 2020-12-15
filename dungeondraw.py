@@ -102,14 +102,19 @@ class MapDisplay:
 
 
 class GameDisplay:
-    def __init__(self, canvas, dungeon, adventurer):
+    def __init__(self, canvas, dungeon):
         self.canvas = canvas
         self.dungeon = dungeon
-        location = adventurer.current_location
+        entrance_location = self.dungeon.unique_rooms[0].position()
+        self.row = entrance_location[0]
+        self.col = entrance_location[1]
+
+    def set_position(self, location):
         self.row = location[0]
         self.col = location[1]
 
     def draw(self):
+        self.canvas.delete("all")
         if self.dungeon.check_north(self.row, self.col):
             north = self.dungeon.get_room(self.row-1, self.col)
             self.draw_room(north, self.row-1, self.col)
