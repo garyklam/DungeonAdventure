@@ -5,7 +5,7 @@ from room import Room
 class Adventurer:
     def __init__(self, name: str):
         self.name = name
-        self.hit_point = random.randint(75, 100)
+        self._hit_point = random.randint(75, 100)
         self.healing_potion = []
         self.vision_potion = 0
         self.pillars = []
@@ -19,17 +19,28 @@ class Adventurer:
         self._current_location = (row, col)
 
     def hit_point(self):
-        return self.hit_point
+        return self._hit_point
+
+    def take_healing_potion(self, potion):
+        self.healing_potion.append(potion)
+
+    def take_vision_potion(self):
+        self.vision_potion += 1
+
+    def take_pillar(self, pillar):
+        self.pillars.append(pillar)
 
     def decrease_hit_points(self, points):
-        self.hit_point = self.hit_point - points
-        if self.hit_point < 0:
-            # need to discuss how to show the message
-            print('You lose')
+        self._hit_point -= points
+        # if self._hit_point < 0:
+        #     need to discuss how to show the message
+            # print('You lose')
 
     def use_healing_potion(self):
         if len(self.healing_potion) > 0:
-            self.hit_point += self.healing_potion.pop(0)
+            self._hit_point += self.healing_potion.pop(0)
+        if self._hit_point > 100:
+            self._hit_point = 100
 
     def use_vision_potion(self):
         self.vision_potion = self.vision_potion - 1
@@ -53,12 +64,12 @@ class Adventurer:
                 print('You win')
 
     def has_all_pillars(self):
-        pillars = {"Abstraction", "Encapslation", "Inheritance", "Polymorphism"}
-        if self.pillars != 4:
-            return False
+        pillars = ("Abstraction", "Encapsulation", "Inheritance", "Polymorphism")
+        # if self.pillars != 4:
+        #     return False
 
-        for pillar in self.pillars:
-            if pillar not in pillars:
+        for pillar in pillars:
+            if pillar not in self.pillars:
                 return False
         return True
 

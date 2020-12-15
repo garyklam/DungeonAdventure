@@ -77,6 +77,9 @@ class Room:
     def get_Potion_HitPoint(self):
         return self.__HitPoints
 
+    def take_pillar(self):
+        self.__pillar = None
+
     def __str__(self):
         item_count = 0
         if self.__HealingPotion:
@@ -110,13 +113,13 @@ class Room:
 
     def set_room_type(self):
         # choice_list = ["H", "V", "O", "i", "IP", "X"]
-        room_type = random.randint(0,100)
-        if room_type%7 == 0:
+        room_type = random.randint(1,101)
+        if room_type%10 == 0:
             self.__HealingPotion = True
             self.__HitPoints = random.randint(10, 15)
-        if room_type%15 == 0:
+        if room_type%15== 0:
             self.__VisionPotion = True
-        if room_type%10 == 0:
+        if room_type%7 == 0:
             self.set_pit()
         # elif room_type == "O":
         #     self.__exit = True

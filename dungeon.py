@@ -106,10 +106,6 @@ class Dungeon:
         if self.grid[row][col] not in self.visited_rooms:
             self.visited_rooms.append(self.grid[row][col])
             if all(items in self.visited_rooms for items in self.unique_rooms):
-                # test lines
-                # for items in self.visited_rooms:
-                #     print(items)
-                # self.visited_rooms.clear()
                 found_path = True
             else:
                 if not found_path and self.check_north(row, col):
