@@ -91,6 +91,39 @@ class MapDisplay:
                                                  self.room_unit * row + 65, fill="white", outline="")
 
 
+class GameDisplay:
+    def __init__(self, canvas, dungeon, adventurer):
+        self.canvas = canvas
+        self.dungeon = dungeon
+        location = adventurer.current_location
+        self.row = location[0]
+        self.col = location[1]
+
+    def draw(self):
+        if self.dungeon.check_north(self.row, self.col):
+            north = self.dungeon.get_room(self.row-1, self.col)
+            self.draw_room(north, 0, 1)
+        if self.dungeon.check_south(self.row, self.col):
+            south = self.dungeon.get_room(self.row+1, self.col)
+            self.draw_room(south, 2, 1)
+        if self.dungeon.check_east(self.row, self.col):
+            east = self.dungeon.get_room(self.row, self.col+1)
+            self.draw_room(east, 1, 2)
+        if self.dungeon.check_west(self.row, self.col):
+            west = self.dungeon.get_room(self.row, self.col-1)
+            self.draw_room(west, 1, 0)
+        room = self.dungeon.get_room(self.row, self.col)
+        self.draw_room(room, 1, 1)
+
+
+    def draw_room(self, room, row, col):
+        pass
+        # if room not in self.dungeon.visited_rooms:
+        #     self.canvas.create_rectangle()
+
+
+
+
 if __name__ == '__main__':
     from adventurer import Adventurer
 
