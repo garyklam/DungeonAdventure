@@ -63,5 +63,5 @@ class Adventurer:
         return True
 
     def __str__(self):
-        return "%s hit point: %s, healing potion: %s, vision potion: %s, pillars: s%" % (
+        return "%s hit point: %s, healing potion: %s, vision potion: %s, pillars: %s" % (
             self.name, self.hit_point, self.healing_potion, self.vision_potion, self.pillars)
