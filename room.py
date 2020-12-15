@@ -19,18 +19,32 @@ class Room:
         self.__HitPoints = 0
         self.__DamagePoints = 0
         self.__EmptyRoom = False
+        self.set_room_type()
 
     def doors(self):
         return self.__doors
 
     def set_exit(self):
         self.__exit = True
+        self.clear_room()
 
     def set_entrance(self):
         self.__entrance = True
+        self.clear_room()
+
+    def clear_room(self):
+        self.__HealingPotion = False
+        self.__VisionPotion = False
+        self.__pit = False
+        self.__MultipleItems = False
+        self.__HitPoints = 0
+        self.__DamagePoints = 0
 
     def position(self):
         return self.__position
+
+    def healing_potion(self):
+        return self.__HealingPotion
 
     def vision_potion(self):
         return self.__VisionPotion
@@ -95,22 +109,21 @@ class Room:
             return room_string
 
     def set_room_type(self):
-        choice_list = ["H", "V", "O", "i", "IP", "X"]
-        room_type = random.choice(choice_list)
-        if room_type == "H":
+        # choice_list = ["H", "V", "O", "i", "IP", "X"]
+        room_type = random.randint(0,100)
+        if room_type%7 == 0:
             self.__HealingPotion = True
             self.__HitPoints = random.randint(10, 15)
-        elif room_type == "V":
+        if room_type%15 == 0:
             self.__VisionPotion = True
-            self.__HitPoints = random.randint(15, 25)
-        elif room_type == "O":
-            self.__exit = True
-        elif room_type == "i":
-            self.__entrance = True
-        elif room_type == "IP":
-            self.__impassable = True
-        else:
+        if room_type%10 == 0:
             self.set_pit()
+        # elif room_type == "O":
+        #     self.__exit = True
+        # elif room_type == "i":
+        #     self.__entrance = True
+        # elif room_type == "IP":
+        #     self.__impassable = True
 
     def set_pit(self):
         self.__pit = True
