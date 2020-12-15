@@ -13,6 +13,9 @@ class AdventureGUI:
         self.root.resizable(False, False)
         self.root.title("Dungeon Adventure")
         self.start_menu_init()
+        # self.root.mainloop()
+
+    def start(self):
         self.root.mainloop()
 
     def start_menu_init(self):
@@ -122,7 +125,6 @@ class AdventureGUI:
             entrance = self.dungeon.unique_rooms[0].position()
             entrance_row, entrance_col = entrance[0], entrance[1]
             self.adventurer.set_location(entrance_row, entrance_col)
-            # start main game logic
             main_game = Main_Game(self.root, self.dungeon, self.adventurer)
             main_game.frame.grid(row=0, column=0)
 
@@ -132,3 +134,4 @@ class AdventureGUI:
 
 if __name__ == '__main__':
     game = AdventureGUI()
+    game.start()

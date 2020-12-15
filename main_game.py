@@ -47,7 +47,7 @@ class Main_Game:
 
         def show_entire_map(dungeon):
             map_window = Toplevel()
-            map_window.title("I hope you're allowed to see this :)")
+            map_window.title("This should help quite a bit!")
             drawer = MapDisplay(dungeon, map_window)
             entire_map = drawer.draw_entire_map()
             entire_map.pack()
@@ -61,7 +61,7 @@ class Main_Game:
         self.root.config(menu=menubar)
 
     def _interface_init(self):
-        self.text_display = scrolledtext.ScrolledText(self.frame, height=10, font="Times 14", wrap="word")
+        self.text_display = scrolledtext.ScrolledText(self.frame, height=8, font="Times 12", wrap="word")
         self.text_display.grid(row=1, column=0, rowspan=3)
         self.text_display.insert("1.0", "Welcome to the 502 Dungeon.\nFind all four pillars to unlock the exit.")
         self.text_display.configure(state="disabled")
@@ -132,8 +132,8 @@ class Main_Game:
         pillar_list = Label(player_info, text=pillar_text, font="Times 14").grid(row=5, column=1)
 
     def _display_init(self):
-        self.display = Canvas(self.frame, height=900, width=900, bg="white")
-        # drawer = GameDisplay(self.display, self.dungeon, self.adventurer)
-        # drawer.draw()
+        self.display = Canvas(self.frame, height=620, width=620, bg="white")
+        drawer = GameDisplay(self.display, self.dungeon, self.adventurer)
+        drawer.draw()
         self.display.grid(row=0, column=0, columnspan=4)
 
