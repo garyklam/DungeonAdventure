@@ -30,6 +30,12 @@ class AdventureGUI:
 
         exit_button = Button(self.startmenu, text="Exit", font="Times 20", command=self.root.destroy).pack()
         menu_spacer2 = Frame(self.startmenu, height=100, width=600).pack()
+        test_button = Button(self.startmenu, text="TEST", command=self.test_method).pack()
+
+    def test_method(self):
+        pass
+
+
 
 
     def display_instructions(self):
@@ -90,7 +96,7 @@ class AdventureGUI:
         medium_button.grid(row=3, column=2)
         easy_button = Button(creation_menu, text="Easy", relief="sunken", command=lambda:set_difficulty("Easy"))
         easy_button.grid(row=4, column=2)
-        custom = Button(creation_menu, text="Custom", command=lambda:set_difficulty("Custom"))
+        # custom = Button(creation_menu, text="Custom", command=lambda:set_difficulty("Custom"))
         # custom.grid(row=5, column=2)
         confirm_button = Button(creation_menu, text="Confirm", font="Times 16",
                                 command=lambda:self.start_game(name_entry.get(), creation_menu))
@@ -118,7 +124,7 @@ class AdventureGUI:
             self.adventurer.set_location(entrance_row, entrance_col)
             # start main game logic
             main_game = Main_Game(self.root, self.dungeon, self.adventurer)
-            main_game.display().grid(row=0, column=0)
+            main_game.frame.grid(row=0, column=0)
 
 
 
