@@ -49,11 +49,11 @@ class Adventurer:
     def enter_room(self, room):
         if room.get_Potion_HitPoint():
             self.healing_potion.append(room.hit_points())
-            room.unset_healing_potion()
+            room.take_healing_potion()
 
         if room.vision_potion():
             self.vision_potion = self.vision_potion + 1
-            room.unset_vision_potion()
+            room.take_vision_potion()
 
         if room.pit():
             self.decrease_hit_points(room.damage_points())
