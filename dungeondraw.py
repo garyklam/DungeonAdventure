@@ -1,7 +1,7 @@
 from tkinter import Tk, Canvas, Frame, Button, Entry
 
 class MapDisplay:
-
+    """Contains methods to create map objects for the adventure game."""
     def __init__(self, dungeon, root):
         self.dungeon = dungeon
         self.rows = self.dungeon.rows
@@ -12,6 +12,9 @@ class MapDisplay:
         self.entire_map = Canvas(self.root, height=self.rows*self.room_unit, width=self.cols*self.room_unit, bg="white")
 
     def draw_entire_map(self):
+        """Draws all of the rooms in the dungeon along with their contents. Draws walls in a separate loop from the
+        doors to avoid overlapping lines causing doors to be obscoured in the map. Returns the canvas object after
+        drawing all features."""
         for list in self.dungeon.grid:
             for room in list:
                 self.draw_walls(room, self.entire_map)
@@ -22,6 +25,9 @@ class MapDisplay:
         return self.entire_map
 
     def draw_player_map(self, adventurer):
+        """Draws all of the rooms that are in the list of visited rooms in the dungeon. Takes the position of the
+        adventurer and displays the adventurer's name in the corresponding room. Returns the canvas object after
+        drawing all features."""
         for room in self.dungeon.visited_rooms:
             self.draw_walls(room, self.player_map)
         for room in self.dungeon.visited_rooms:
@@ -33,58 +39,48 @@ class MapDisplay:
         return self.player_map
 
     def draw_walls(self, room, canvas):
+        """Draws a rectangle representing a room in the dungeon in the canvas that is passed in. Uses the position of
+        the room to position the rectangle within the canvas."""
         position = room.position()
         row, col = position[0], position[1]
         canvas.create_rectangle(self.room_unit * col, self.room_unit * row, self.room_unit * (col+1),
                                 self.room_unit * (row+1), width=4)
 
     def draw_room_contents(self, room, canvas):
-        def draw_pillar(pillar):
-            canvas.create_text(room_unit * col + 15, room_unit * (row+1) - 15, text=pillar[0],
-                                    font="Times 14")
-
-        def draw_exit():
-            canvas.create_text(room_unit * col + offset, room_unit * row + offset, text="Ex",
-                                    font="Times 14")
-
-        def draw_entrance():
-            canvas.create_text(room_unit * col + offset, room_unit * row + offset, text="En",
-                                    font="Times 14")
-
-        def draw_potion():
-            canvas.create_oval(room_unit * col + 8, room_unit * row +8, room_unit * col + 18, room_unit * row + 18,
-                               fill="red")
-
-        def draw_pit():
-            canvas.create_oval(room_unit * col + 25, room_unit * row + 25, room_unit * col + 49, room_unit * row + 49,
-                               fill="light grey", outline="black")
-
-        def draw_vision():
-            canvas.create_polygon(room_unit * col + 62, room_unit * row + 14, room_unit * col + 66, room_unit * row + 8,
-                                  room_unit * col + 70, room_unit * row + 14, room_unit * col + 66, room_unit * row + 20,
-                                  fill="blue")
-
+        """Draws the contents of the room passed in. Checks if the room contains the entrance or exit, then checks
+        if the room has a pillar, pit, vision potion, or healing potion. Draws the corresponding object if any
+        of the checks returns true."""
         position = room.position()
         row, col = position[0], position[1]
-        room_unit = self.room_unit
-        offset = room_unit // 2
-
+        offset = self.room_unit // 2
 
         if room.exit():
-            draw_exit()
+            canvas.create_text(self.room_unit * col + offset, self.room_unit * row + offset, text="Ex",
+                               font="Times 14")
         elif room.entrance():
-            draw_entrance()
+            canvas.create_text(self.room_unit * col + offset, self.room_unit * row + offset, text="En",
+                               font="Times 14")
         else:
             if room.pillar():
-                draw_pillar(room.pillar())
+                pillar = room.pillar()
+                canvas.create_text(self.room_unit * col + 15, self.room_unit * (row + 1) - 15, text=pillar[0],
+                                   font="Times 14")
             if room.healing_potion():
-                draw_potion()
+                canvas.create_oval(self.room_unit * col + 8, self.room_unit * row + 8,
+                                   self.room_unit * col + 18, self.room_unit * row + 18, fill="red")
             if room.pit():
-                draw_pit()
+                canvas.create_oval(self.room_unit * col + 25, self.room_unit * row + 25,
+                                   self.room_unit * col + 49, self.room_unit * row + 49, fill="light grey")
             if room.vision_potion():
-                draw_vision()
+                canvas.create_polygon(self.room_unit * col + 62, self.room_unit * row + 14,
+                                      self.room_unit * col + 66, self.room_unit * row + 8,
+                                      self.room_unit * col + 70, self.room_unit * row + 14,
+                                      self.room_unit * col + 66, self.room_unit * row + 20, fill="blue")
 
     def draw_door(self, room, canvas):
+        """Draws the doors of the rooms in the dungeon on the canvas that is passsed in. Checks if it is possible to
+        travel in each direction using the dungeon's check_direction method and draws a door if it is possible to
+        travel in that direction."""
         position = room.position()
         row, col = position[0], position[1]
         if self.dungeon.check_north(row, col):
@@ -102,6 +98,8 @@ class MapDisplay:
 
 
 class GameDisplay:
+    """Contains methods for drawing the main game display, which shows the room the adventurer is in and the adjacent
+    rooms that can be reached from the current room."""
     def __init__(self, canvas, dungeon):
         self.canvas = canvas
         self.dungeon = dungeon
@@ -110,10 +108,13 @@ class GameDisplay:
         self.col = entrance_location[1]
 
     def set_position(self, location):
+        """Changes the position of the central room drawn in the game display."""
         self.row = location[0]
         self.col = location[1]
 
     def draw(self):
+        """Clears the current display and redraws it. Checks if the adjacent rooms can be reached and if they can,
+        draws out the room. Then draws the central room."""
         self.canvas.delete("all")
         if self.dungeon.check_north(self.row, self.col):
             north = self.dungeon.get_room(self.row-1, self.col)
@@ -132,6 +133,9 @@ class GameDisplay:
 
 
     def draw_room(self, room, row, col):
+        """Converts the position of the room within the dungeon to the position on the game display. If the room has
+        been visited, then the doors and contents of the room are drawn. If the room has not been visited, then a
+        grey square is drawn."""
         row_offset = self.row-1
         col_offset = self.col-1
         display_row = row - row_offset
@@ -141,18 +145,27 @@ class GameDisplay:
                                          (display_row + 1) * 200 + 10, fill="white", width=4)
             self.draw_doors(row, col)
             if room.exit():
-                self.draw_exit(display_row, display_col)
+                self.canvas.create_text(200 * display_col + 110, 200 * display_row + 110, text="Ex",
+                                        font="Times 24")
             elif room.entrance():
-                self.draw_entrance(display_row, display_col)
+                self.canvas.create_text(200 * display_col + 110, 200 * display_row + 110, text="En",
+                                        font="Times 24")
             else:
                 if room.pillar():
-                    self.draw_pillar(room.pillar(), display_row, display_col)
+                    pillar = room.pillar()
+                    self.canvas.create_text(200 * display_col + 30, 200 * (display_row + 1) - 15, text=pillar[0],
+                                            font="Times 24")
                 if room.healing_potion():
-                    self.draw_potion(display_row, display_col)
+                    self.canvas.create_oval(200 * display_col + 15, 200 * display_row + 15,
+                                            200 * display_col + 30, 200 * display_row + 30, fill="red")
                 if room.pit():
-                    self.draw_pit(display_row, display_col)
+                    self.canvas.create_oval(200 * display_col + 70, 200 * display_row + 70,
+                                            200 * display_col + 150, 200 * display_row + 150, fill="light grey")
                 if room.vision_potion():
-                    self.draw_vision(display_row, display_col)
+                    self.canvas.create_polygon(200 * display_col + 189, 200 * display_row + 23,
+                                               200 * display_col + 195, 200 * display_row + 15,
+                                               200 * display_col + 201, 200 * display_row + 23,
+                                               200 * display_col + 195, 200 * display_row + 31, fill="blue")
 
         else:
             self.canvas.create_rectangle(display_col * 200 + 10, display_row * 200 + 10, (display_col + 1) * 200 + 10,
@@ -160,6 +173,8 @@ class GameDisplay:
 
 
     def draw_doors(self, row, col):
+        """Checks if it is possible to travel to the adjacent room. If true, then a door is drawn on the appropriate
+        side"""
         row_offset = self.row - 1
         col_offset = self.col - 1
         display_row = row - row_offset
@@ -178,34 +193,6 @@ class GameDisplay:
             self.canvas.create_line(200 * (display_col + 1) + 10, 200 * display_row + 55,
                                     200 * (display_col + 1) + 10,
                                     200 * display_row + 165, fill="white", width=4)
-
-    def draw_pillar(self, pillar, row, col):
-        self.canvas.create_text(200 * col + 30, 200 * (row + 1) - 15, text=pillar[0],
-                           font="Times 24")
-
-    def draw_exit(self, row, col):
-        self.canvas.create_text(200 * col + 110, 200 * row + 110, text="Ex",
-                           font="Times 24")
-
-    def draw_entrance(self, row, col):
-        self.canvas.create_text(200 * col + 110, 200 * row + 110, text="En",
-                           font="Times 24")
-
-    def draw_potion(self, row, col):
-        self.canvas.create_oval(200 * col + 15, 200 * row + 15, 200 * col + 30, 200 * row + 30,
-                           fill="red")
-
-    def draw_pit(self, row, col):
-        self.canvas.create_oval(200 * col + 70, 200 * row + 70, 200 * col + 150, 200 * row + 150,
-                           fill="light grey", outline="black")
-
-    def draw_vision(self, row, col):
-        self.canvas.create_polygon(200 * col + 189, 200 * row + 23, 200 * col + 195, 200 * row + 15,
-                                200 * col + 201, 200 * row + 23, 200 * col + 195, 200 * row + 31,
-                                fill="blue")
-
-
-
 
 
 if __name__ == '__main__':

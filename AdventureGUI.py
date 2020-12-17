@@ -13,13 +13,15 @@ class AdventureGUI:
         self.root.resizable(False, False)
         self.root.title("Dungeon Adventure")
         self.start_menu_init()
-        # self.root.mainloop()
 
     def start(self):
+        """Creates the tkinter window containing the game. Used to delay startup so that changes can be made to
+        the dungeon and adventurer for testing specific cases."""
         self.root.mainloop()
 
     def start_menu_init(self):
-
+        """Builds the start menu for the game. Has a button to start a new game, display instructions and exit the
+        program."""
         self.startmenu = Frame(self.root)
         self.startmenu.grid(row=0,column=0)
         menu_spacer = Frame(self.startmenu, height=100, width=600).grid(row=0, column=0)
@@ -37,6 +39,8 @@ class AdventureGUI:
         menu_spacer2 = Frame(self.startmenu, height=100, width=600).grid(row=5, column=0)
 
     def display_instructions(self):
+        """Displays basic instructions for the game. Hides the start menu and replaces it with a screen containing
+        text from a separate text file. Creates a button that will return the user to the start menu."""
         self.startmenu.grid_forget()
         instruction_file = open("dungeon_instruct.txt", 'r')
         instruction_text = instruction_file.read()
@@ -51,26 +55,26 @@ class AdventureGUI:
                              command= lambda: self.return_to_start(instruct_frame)).grid(row=1, column=0)
 
     def return_to_start(self, current):
+        """Hides the tkinter object that is passed in and displays the start menu object."""
         current.grid_forget()
         self.startmenu.grid(row=0, column=0)
 
     def game_init(self):
+        """Creates a menu for choosing game settings. Provides an entry for setting an adventurer name and buttons
+        for selecting the game difficulty. The default difficulty is easy and buttons are toggled."""
         def set_difficulty(difficulty):
             if difficulty == "Hard":
                 dungeon.resize_dungeon(10, 10)
-                # set adventurer.hp
                 easy_button["relief"] = "raised"
                 medium_button["relief"] = "raised"
                 hard_button["relief"] = "sunken"
             elif difficulty == "Medium":
                 dungeon.resize_dungeon(7, 7)
-                # set adventurer.hp
                 easy_button["relief"] = "raised"
                 medium_button["relief"] = "sunken"
                 hard_button["relief"] = "raised"
             elif difficulty == "Easy":
                 dungeon.resize_dungeon(4, 4)
-                # set adventurer.hp
                 easy_button["relief"] = "sunken"
                 medium_button["relief"] = "raised"
                 hard_button["relief"] = "raised"
@@ -103,6 +107,10 @@ class AdventureGUI:
 
 
     def start_game(self, name, current_canvas):
+        """Checks if an adventurer name was given, if not, creates a popup prompting for a name. If a name is given,
+        the creation menu is hidden, the dungeon is generated, and the adventurer is placed at the entrance. The
+        main game logic is started by the Main_Game class. Adds the start menu to the window behind the main game
+        to allow the game to restart if the main game ends."""
         if name.strip() == "":
             error_window = Toplevel()
             error_window.title("Error")
@@ -119,10 +127,6 @@ class AdventureGUI:
             self.startmenu.grid(row=0, column=0)
             main_game = Main_Game(self.root, self.dungeon, self.adventurer)
             main_game.frame.grid(row=0, column=0)
-
-
-
-
 
 
 if __name__ == '__main__':

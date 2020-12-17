@@ -7,7 +7,7 @@ Time spent:
 
 Project work
 	Pragati:
-	Gary: 
+	Gary: dungeon, adventureGUI
 	Wenqian: adventurer, unit test
 
 Shortcomings of the program:
