@@ -2,7 +2,10 @@ import random
 from room import Room
 
 class Dungeon:
+
     def __init__(self, rows, columns):
+        """Only holds dimension and initializes fields for unique and visited rooms. Doesn't create the 2D array of
+        rooms until generate is called."""
         if rows * columns < 6:
             raise ValueError("Dungeon size is too small.")
         elif rows * columns > 225:
@@ -13,6 +16,7 @@ class Dungeon:
         self.visited_rooms = []
 
     def get_room(self, row, col):
+        """Returns room object located at the given row and column."""
         return self.grid[row][col]
 
     def resize_dungeon(self, row, col):
@@ -47,7 +51,6 @@ class Dungeon:
             self.generate()
             completable = self.check_traversal(entrance[0], entrance[1])
 
-
     def set_borders(self):
         """Sets the door values of the rooms on the edge of the dungeon to be walls."""
         for Room in self.grid[0]:
@@ -64,13 +67,10 @@ class Dungeon:
         the pillars in the list, then adds it to a list of unique rooms so that it cannot be chosen for the next pillar.
         """
         pillars = ("Abstraction", "Encapsulation", "Inheritance", "Polymorphism")
-
         for key in pillars:
             unique_room = self.find_rand_room()
             self.unique_rooms.append(unique_room)
             unique_room.set_pillar(key)
-            # test line
-            # print(f'{key} at {unique_room}')
 
     def find_rand_room(self):
         """
@@ -97,11 +97,13 @@ class Dungeon:
         exit = self.find_rand_room()
         exit.set_exit()
         self.unique_rooms.append(exit)
-        # test line
-        # print(f'Entrance at {entrance} \nExit at {exit}')
-
 
     def check_traversal(self, row, col):
+        """
+        Checks if it is possible to reach the exit and all of the pillars from the initial location passed in. Keeps a
+        list of rooms that have been visited to avoid an infinite loop. The list of unique rooms used to place the
+        pillars, entrance, and exit is used to check if the all of the rooms have been visited.
+        """
         found_path = False
         if self.grid[row][col] not in self.visited_rooms:
             self.visited_rooms.append(self.grid[row][col])
@@ -129,6 +131,9 @@ class Dungeon:
             return False
 
     def check_north(self, row, col):
+        """Checks to see if the given room has a room to the "north" and if it is possible to travel to the room.
+        If the given room has an "open" north door or if the northern room has an "open" south door, then it is
+        possible to travel between the two rooms."""
         if self.in_bounds(row-1, col):
             curr = self.get_room(row, col)
             doors1 = curr.doors()
@@ -140,6 +145,9 @@ class Dungeon:
             return False
 
     def check_south(self, row, col):
+        """Checks to see if the given room has a room to the "south" and if it is possible to travel to the room.
+            If the given room has an "open" south door or if the southern room has an "open" north door, then it is
+            possible to travel between the two rooms."""
         if self.in_bounds(row+1, col):
             curr = self.get_room(row, col)
             doors1 = curr.doors()
@@ -151,6 +159,9 @@ class Dungeon:
             return False
 
     def check_east(self, row, col):
+        """Checks to see if the given room has a room to the "east" and if it is possible to travel to the room.
+            If the given room has an "open" east door or if the eastern room has an "west" south door, then it is
+            possible to travel between the two rooms."""
         if self.in_bounds(row, col+1):
             curr = self.get_room(row, col)
             doors1 = curr.doors()
@@ -162,6 +173,9 @@ class Dungeon:
             return False
 
     def check_west(self, row, col):
+        """Checks to see if the given room has a room to the "west" and if it is possible to travel to the room.
+            If the given room has an "open" west door or if the western room has an "open" west door, then it is
+            possible to travel between the two rooms."""
         if self.in_bounds(row, col-1):
             curr = self.get_room(row, col)
             doors1 = curr.doors()
