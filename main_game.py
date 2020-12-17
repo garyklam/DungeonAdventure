@@ -276,7 +276,7 @@ class Main_Game:
         replay.grid(row=3, column=1)
         exit = Button(end, text="Exit", font="Times 16", command=lambda:close_game(self.root))
         exit.grid(row=3, column=2)
-        stats_text = ""
+        stats_text = "STATS\n"
         for key, item in self.stats.items():
             stats_text += f'{key}: {item}\n'
         stats = Label(end, text=stats_text, font="Times 14")
@@ -285,6 +285,7 @@ class Main_Game:
             end.title("GAME OVER")
             text = Label(end, font="Times 20",
                          text="You've lost all of your health and lose conciousness.\nBetter luck next time.")
+            self.frame.grid_forget()
         else:
             end.title("CONGRATULATIONS")
             text = Label(end, font="Times 20",

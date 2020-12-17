@@ -8,7 +8,6 @@ class AdventureGUI:
         self.dungeon = Dungeon(4, 4)
         self.dungeon.generate()
         self.adventurer = Adventurer("")
-
         self.root = Tk()
         self.root.resizable(False, False)
         self.root.title("Dungeon Adventure")
@@ -117,6 +116,7 @@ class AdventureGUI:
             message = Label(error_window, text="Please enter a name", font="Times 20").grid(row=0, column=0)
         else:
             current_canvas.grid_forget()
+            self.adventurer = Adventurer("")
             self.adventurer.name = name
             self.dungeon.generate()
             self.dungeon.visited_rooms.clear()
