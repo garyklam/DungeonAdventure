@@ -188,12 +188,41 @@ class Dungeon:
 
 
 if __name__ == '__main__':
+    """Demonstration of dungeon generation. Each dungeon will be displayed in a separate window, if the dungeon
+    fails the traversal check, closing the window will create a new dungeon and display it. This will continue until
+    a valid dungeon is generated."""
+    from adventurer import Adventurer
+    from dungeondraw import MapDisplay
+    from tkinter import Tk
 
-    test = Dungeon(6,6)
-    test.generate()
+    def generate(dungeon):
+        dungeon.visited_rooms.clear()
+        dungeon.grid = [[Room(r, c) for c in range(dungeon.cols)] for r in range(dungeon.rows)]
+        dungeon.set_borders()
+        dungeon.set_entrance_and_exit()
+        entrance = dungeon.unique_rooms[0].position()
+        dungeon.set_pillars()
+        completable = dungeon.check_traversal(entrance[0], entrance[1])
+        if not completable:
+            print("Invalid dungeon, regenerating")
+            root = Tk()
+            root.title("Invalid Dungeon")
+            drawer = MapDisplay(dungeon, root)
+            entire_map = drawer.draw_entire_map()
+            entire_map.pack()
+            root.mainloop()
+            generate(dungeon)
+            completable = dungeon.check_traversal(entrance[0], entrance[1])
 
-    # test.show_map()
-    # test.show_map_no_fog()
-    # test.draw_path()
+    test = Dungeon(6, 6)
+    generate(test)
+    print("Dungeon passes traversal check")
+    root = Tk()
+    root.title("Valid Dungeon")
+    mapdrawer = MapDisplay(test, root)
+    entire_map = mapdrawer.draw_entire_map()
+    entire_map.pack()
+    root.mainloop()
+
 
 
