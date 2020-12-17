@@ -1,10 +1,12 @@
+# room provides basic functionality for dungeon by giving all features required for room in dungeon.
+
 import random
 
 class Room:
 
     def __init__(self, row, column):
-        self.__position = (row, column)
-        self.__doors = {"north": random.randint(0, 4),
+        self.__position = (row, column)      #gives location of adventurer.
+        self.__doors = {"north": random.randint(0, 4),#select random value fron o to 4 and accordingly door value will be ie open/close.
                         "south": random.randint(0, 4),
                         "east": random.randint(0, 4),
                         "west": random.randint(0, 4)
@@ -19,20 +21,21 @@ class Room:
         self.__HitPoints = 0
         self.__DamagePoints = 0
         self.__EmptyRoom = False
+        self.__impassable = False
         self.set_room_type()
 
     def doors(self):
         return self.__doors
 
-    def set_exit(self):
+    def set_exit(self):  # set room as exit room .
         self.__exit = True
         self.clear_room()
 
-    def set_entrance(self):
+    def set_entrance(self):   # set room as entrance room.
         self.__entrance = True
         self.clear_room()
 
-    def clear_room(self):
+    def clear_room(self):    #take care of exit/entrance room should not contain anything else.
         self.__HealingPotion = False
         self.__VisionPotion = False
         self.__pit = False
@@ -40,7 +43,7 @@ class Room:
         self.__HitPoints = 0
         self.__DamagePoints = 0
 
-    def position(self):
+    def position(self):  # gives location.
         return self.__position
 
     def healing_potion(self):
@@ -109,24 +112,42 @@ class Room:
                            + "O" + str(self.__exit) + "\n" \
                            + "i" + str(self.__entrance) + "\n" \
                            + "< >" + str(self.__EmptyRoom) + "\n"
+            if self.__doors["north"] > 2:       #if random value is grater than 2 door open.
+                room_string += "north door: Yes"
+            else:
+                room_string += "north door: No"
+            if self.__doors["south"] > 2:
+                room_string += "south door: Yes"
+            else:
+                room_string += "south door: No"
+            if self.__doors["east"] > 2:
+                room_string += "east door: Yes"
+            else:
+                room_string += "east door: No"
+            if self.__doors["west"] > 2:
+                room_string += "west door: Yes"
+            else:
+                room_string += "west door: No"
             return room_string
 
-    def set_room_type(self):
-        # choice_list = ["H", "V", "O", "i", "IP", "X"]
-        room_type = random.randint(1,101)
-        if room_type%10 == 0:
-            self.__HealingPotion = True
-            self.__HitPoints = random.randint(10, 15)
-        if room_type%15== 0:
-            self.__VisionPotion = True
-        if room_type%7 == 0:
-            self.set_pit()
-        # elif room_type == "O":
-        #     self.__exit = True
-        # elif room_type == "i":
-        #     self.__entrance = True
-        # elif room_type == "IP":
-        #     self.__impassable = True
+    def set_room_type(self):  #set room type according the things present in room.
+            choice_list = ["H", "V", "O", "i", "IP", "X"]
+            room_type = random.choice(choice_list)
+            if room_type == "H":
+                self.__HealingPotion = True
+                self.__HitPoints = random.randint(10, 15)
+            elif room_type == "V":
+                self.__VisionPotion = True
+                self.__HitPoints = random.randint(15, 25)
+            elif room_type == "O":
+                self.__exit = True
+            elif room_type == "i":
+                self.__entrance = True
+            elif room_type == "IP":
+                self.__impassable = True
+            else:
+                self.set_pit()
+
 
     def set_pit(self):
         self.__pit = True
@@ -137,11 +158,11 @@ class Room:
 
     def is_empty_room(self):
         if self.__HealingPotion or self.__VisionPotion or self.__pillar is not None or self.__pit:
-            self.__EmptyRoom = False
+            self.__EmptyRoom = False  #if one of above present room is not empty.
         else:
             self.__EmptyRoom = True
 
-    def set_north_border(self):
+    def set_north_border(self):   #take cares of no door codition on north border.
         self.__doors["north"] = 0
 
     def set_south_border(self):
