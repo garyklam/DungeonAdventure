@@ -21,7 +21,7 @@ was started.
 
 
 Questions:
-1. In this program, many methods use random.randint() to produce random integers. How to test these method?
+1. In this program, many methods use random.randint() to produce random integers. How to test these methods?
 
 Other info:
 To start the game, run adventurerGUI.py, which has the lines for starting the game in main.
