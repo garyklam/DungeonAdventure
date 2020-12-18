@@ -1,4 +1,5 @@
 from tkinter import Menu, Button, scrolledtext, Frame, Canvas, Toplevel, Label
+from tkinter.constants import END
 from dungeondraw import MapDisplay, GameDisplay
 
 class Main_Game:
@@ -55,7 +56,7 @@ class Main_Game:
             instruction_file = open("dungeon_instruct.txt", 'r')
             instruction_text = instruction_file.read()
             text_display.configure(state="normal")
-            text_display.insert("insert", instruction_text)
+            text_display.insert(END, instruction_text)
             text_display.configure(state="disabled")
             instruction_file.close()
 
@@ -260,8 +261,9 @@ class Main_Game:
         """Helper function for displaying text in the text display. The state needs to be set to normal to add text and
         set to diabled afterwards to prevent the player from entering their own text."""
         self.text_display.configure(state="normal")
-        self.text_display.insert("insert", string)
+        self.text_display.insert(END, string)
         self.text_display.configure(state="disabled")
+        self.text_display.see(END)
 
     def game_over(self, condition):
         """Creates a popup with a replay and exit button. If the game ends in a lost, a consolation message is displayed,
