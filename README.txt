@@ -2,8 +2,8 @@ EC: There are unit tests for methods in room, adventurer, and dungeon. The main 
 
 Group members: Pragati Dode, Gary Lam, Wenqian Li
 
-Time spent:30hrs
-	Pragati: 
+Time spent:
+	Pragati:30 hrs
 	Gary: 30 hrs
 	Wenqian:40 hrs
 
