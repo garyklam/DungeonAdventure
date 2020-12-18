@@ -131,23 +131,34 @@ class Room:
             return room_string
 
     def set_room_type(self):  #set room type according the things present in room.
-            choice_list = ["H", "V", "O", "i", "IP", "X"]
-            room_type = random.choice(choice_list)
+            choice_list = ["H", "V", "P", "H+V", "H+P", "V+P", "H+V+P", "E"]
+            choice_weight = [10, 5, 6, 2, 4, 2, 1, 30]
+            room_type = random.choices(choice_list, choice_weight).pop()
             if room_type == "H":
-                self.__HealingPotion = True
-                self.__HitPoints = random.randint(10, 15)
+                self.set_healing_potion()
             elif room_type == "V":
                 self.__VisionPotion = True
-                self.__HitPoints = random.randint(15, 25)
-            elif room_type == "O":
-                self.__exit = True
-            elif room_type == "i":
-                self.__entrance = True
-            elif room_type == "IP":
-                self.__impassable = True
-            else:
+            elif room_type == "P":
                 self.set_pit()
+            elif room_type == "H+V":
+                self.set_healing_potion()
+                self.__VisionPotion = True
+            elif room_type == "H+P":
+                self.set_healing_potion()
+                self.set_pit()
+            elif room_type == "V+P":
+                self.__VisionPotion = True
+                self.set_pit()
+            elif room_type == "H+V+P":
+                self.set_healing_potion()
+                self.__VisionPotion = True
+                self.set_pit()
+            else:
+                pass
 
+    def set_healing_potion(self):
+        self.__HealingPotion = True
+        self.__HitPoints = random.randint(10, 15)
 
     def set_pit(self):
         self.__pit = True
