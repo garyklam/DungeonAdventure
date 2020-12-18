@@ -5,7 +5,7 @@ Group members: Pragati Dode, Gary Lam, Wenqian Li
 Time spent:
 	Pragati: 
 	Gary: 30 hrs
-	Wenqian:24h
+	Wenqian:40 hrs
 
 Project work
 	Pragati:
@@ -21,6 +21,7 @@ was started.
 
 
 Questions:
+1. In this program, many methods use random.randint() to produce random room(row, col). How to test these method?
 
 Other info:
 To start the game, run adventurerGUI.py, which has the lines for starting the game in main.
