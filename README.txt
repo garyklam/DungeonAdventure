@@ -2,13 +2,13 @@ EC: There are unit tests for methods in room, adventurer, and dungeon. The main 
 
 Group members: Pragati Dode, Gary Lam, Wenqian Li
 
-Time spent:
+Time spent:30hrs
 	Pragati: 
 	Gary: 30 hrs
 	Wenqian:40 hrs
 
 Project work
-	Pragati:
+	Pragati:room,uml
 	Gary: dungeon, adventureGUI
 	Wenqian: adventurer, unit test
 
